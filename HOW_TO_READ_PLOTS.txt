@@ -1,0 +1,156 @@
+HOW TO READ THE AHU–VAV DIAGNOSTIC PLOTS
+August 2026 data | Prepared 28 September 2026
+
+FILES AND ORDER
+There are three pages for each VAV, in VAV01–VAV10 order:
+  01_month: full-month time series and sustained-event markers.
+  02_relationships: three scatter plots using the full month.
+  03_detail: a selected time window at the original 15-minute resolution.
+The PDF contains these 30 pages. The HTML gallery and notebook Section 5
+contain the same plots. Individual PNG files can be opened at full size.
+Titles, axis labels and legends identify the data. Explanations are here,
+outside the charts.
+
+START WITH THE FULL-MONTH PAGE
+Read vertically at the same timestamp across the panels:
+  1. Blue: zone/room temperature. Black dashed: recorded controller target.
+     Green band: +/-1 degrees C around that target.
+  2. Teal: measured airflow in CFM. Black dashed: configured minimum.
+     Orange dotted: 80% of configured minimum.
+     Purple dotted: max(50 CFM,
+     10% of configured maximum), used by the near-closed rule.
+     A gray dash-dot maximum-flow line appears only if within the plotted
+     airflow range. All configured maxima are listed at the end of this file.
+     Airflow axes adapt to each VAV/window; check scales before comparing.
+  3. Purple: recorded damper indication (%).
+     Dotted lines: near-closed 5% and open 95% thresholds.
+  4. Black steps: recorded AHU-3 fan status (On or Off).
+     Green dots at the 'Eligible' level identify screened samples.
+     'Eligible' is a data-analysis marker, not a third fan state.
+  5. Red squares: samples belonging to a sustained screening condition.
+     Each row is a separate rule. Rules can overlap at the same time.
+     Gray shading in this bottom panel means excluded data, not normal data.
+
+TIMELINE SHADING
+Gray shading in the temperature/airflow/damper panels means recorded fan Off.
+Pink shading means suspected frozen data: all three measurements are exactly
+unchanged across a continuous run spanning at least 120 minutes.
+The two shades may overlap. Raw lines are still displayed in these periods.
+Shading extends each sampled interval by 15 minutes for display; exact change
+times between samples are unknown. Lines between samples are visual guides.
+
+READ THE RELATIONSHIP PAGE
+Each dot is one timestamp; the scatter plots alone do not establish duration.
+Light-gray dots are excluded from screening (Off/startup/invalid/frozen).
+Colored dots are eligible samples.
+
+Left: damper (%) on the x-axis, measured airflow (CFM) on the y-axis.
+Color is zone temperature minus controller setpoint: red is warmer, blue is
+colder, and near-neutral colors are close to target. Colors saturate at +/-4 C;
+this does not clip the original measurements.
+Vertical dotted lines mark 5% and 95% damper. The purple horizontal
+line is the significant-flow threshold. Black dashed is configured minimum.
+
+Center: temperature error on the x-axis, airflow on the y-axis.
+Right: temperature error on the x-axis, damper indication on the y-axis.
+Center/right colors indicate damper %, using the rightmost colorbar.
+In both panels, positive error is warmer than target; negative is colder.
+The green vertical band is +/-1 C, and black dashed vertical is zero error.
+A visible cluster is a reason to inspect its timeline, not proof of a fault.
+
+READ THE DETAIL PAGE
+The same four raw-signal panels are shown at a shorter timescale.
+Orange vertical dashed lines bound the first and last sample in the selected
+sustained event. Two hours of surrounding context are included where available.
+The title gives the displayed dates; the x-axis gives times.
+The selected rule is listed under DETAIL WINDOWS below, rather than written
+over the chart. Only one selected window per VAV is shown, so consult the
+full-month panel and diagnostic_events.csv for other events.
+
+VAV09 has no eligible samples because its three signals are constant across
+the dataset. Its relationship page contains gray points only. Its detail page
+shows a 48-hour window around the first recorded fan-On, with no event markers.
+This absence of colored points is not evidence that the VAV is healthy.
+
+SCREENING RULES (ADJUSTABLE ANALYST THRESHOLDS)
+Near-closed + flow: damper <= 5% and flow greater than the purple threshold.
+Open + low flow: damper >= 95% and flow < 80% of configured minimum.
+Below configured minimum: flow < 80% of configured minimum.
+Above configured maximum: flow > 120% of configured maximum.
+Warm zone: zone temperature minus recorded target > 1 C.
+Cold zone: zone temperature minus recorded target < -1 C.
+Warm + low damper: warm-zone rule and damper <= 20%.
+Warm + open damper: warm-zone rule and damper >= 95%.
+Cold + above minimum: cold-zone rule and flow > 120% of minimum.
+
+Eligibility requires recorded fan On, at least 30 minutes since the recorded
+run started, valid required values/ranges, and no suspected frozen triplet.
+Each condition must persist at consecutive 15-minute timestamps spanning at
+least 45 minutes (four samples with current settings). Gaps and exclusions
+break events. A run starting at the dataset boundary also has a conservative
+startup exclusion because its earlier state is unknown.
+
+HOW TO INTERPRET THE EVIDENCE
+1. Locate a red event marker in the full-month page.
+2. Read the damper, airflow and temperature panels at that same time.
+3. Verify the fan status and absence of frozen-data shading.
+4. Inspect the detailed window or event CSV for duration and context.
+5. Compare other VAVs at the same time to distinguish a shared pattern.
+
+Examples of investigation leads, not confirmed causes:
+- Near-closed indication with sustained flow: check actual damper closure,
+  actuator/point mapping, leakage and airflow calibration.
+- High opening with low flow: check actual air delivery, duct pressure,
+  restrictions and airflow sensing.
+- Warm zone with low opening: check local demand/control response and target.
+- Cold zone with above-minimum flow: review cooling control and target.
+If many VAVs change together, check shared AHU operation and timing first.
+
+IMPORTANT INTERPRETATION LIMITS
+Fan state is taken directly from CHN_CKC_B1_03F_BW_FAH03_$FAN_RST.
+It is not inferred from airflow and is not yet verified as physical feedback.
+The damper signal may also be a command rather than actual blade position.
+STMP_CEL is treated as zone temperature, as clarified by the user.
+Recorded STMP_SET values are the comparison targets. Layout temperatures are
+provisional design values and are not substituted into this analysis.
+Configured airflow limits are not instantaneous airflow demand. Occupancy,
+active zone mode, supply temperature and duct pressure are unavailable here.
+Zero airflow is not automatically missing data. Frozen signals require review.
+Percentages in the diagnostic tables use eligible samples as denominators;
+different VAVs have different valid coverage. Do not add overlapping rule rates.
+No efficiency score, compliance determination or confirmed fault is implied.
+Timestamps are used as recorded; the workbook does not encode a timezone.
+
+CONFIGURED VALUES IN THIS WORKBOOK
+VAV01: setpoint 22 C; minimum 845 CFM; maximum 6500 CFM; eligible samples 781/2968.
+VAV02: setpoint 24 C; minimum 845 CFM; maximum 6500 CFM; eligible samples 1242/2968.
+VAV03: setpoint 24 C; minimum 53.67 CFM; maximum 550 CFM; eligible samples 1242/2968.
+VAV04: setpoint 22 C; minimum 105 CFM; maximum 1000 CFM; eligible samples 1242/2968.
+VAV05: setpoint 23 C; minimum 105 CFM; maximum 1000 CFM; eligible samples 1233/2968.
+VAV06: setpoint 22 C; minimum 53.67 CFM; maximum 550 CFM; eligible samples 1242/2968.
+VAV07: setpoint 22 C; minimum 53.67 CFM; maximum 550 CFM; eligible samples 1242/2968.
+VAV08: setpoint 22 C; minimum 35 CFM; maximum 350 CFM; eligible samples 1242/2968.
+VAV09: setpoint 22 C; minimum 105 CFM; maximum 1000 CFM; eligible samples 0/2968.
+VAV10: setpoint 22 C; minimum 53 CFM; maximum 3100 CFM; eligible samples 1242/2968.
+
+DETAIL WINDOWS
+VAV01: 2026-08-20 06:45:00 to 2026-08-20 22:45:00
+  Most prevalent selected screening pattern; longest event for that pattern: warm_low_damper. Includes two hours of context on either side.
+VAV02: 2026-08-04 07:45:00 to 2026-08-04 18:45:00
+  Most prevalent selected screening pattern; longest event for that pattern: warm_low_damper. Includes two hours of context on either side.
+VAV03: 2026-08-04 04:30:00 to 2026-08-05 00:15:00
+  Most prevalent selected screening pattern; longest event for that pattern: cold_zone. Includes two hours of context on either side.
+VAV04: 2026-08-18 04:30:00 to 2026-08-18 22:15:00
+  Most prevalent selected screening pattern; longest event for that pattern: near_closed_with_flow. Includes two hours of context on either side.
+VAV05: 2026-08-11 05:15:00 to 2026-08-12 00:15:00
+  Most prevalent selected screening pattern; longest event for that pattern: below_configured_minimum. Includes two hours of context on either side.
+VAV06: 2026-08-11 06:30:00 to 2026-08-12 00:00:00
+  Most prevalent selected screening pattern; longest event for that pattern: near_closed_with_flow. Includes two hours of context on either side.
+VAV07: 2026-08-05 10:30:00 to 2026-08-06 00:15:00
+  Most prevalent selected screening pattern; longest event for that pattern: warm_open_damper. Includes two hours of context on either side.
+VAV08: 2026-08-05 11:00:00 to 2026-08-06 00:15:00
+  Most prevalent selected screening pattern; longest event for that pattern: warm_open_damper. Includes two hours of context on either side.
+VAV09: 2026-08-02 18:00:00 to 2026-08-04 18:00:00
+  No assessable sustained event. Show 48-hour window around first recorded fan-On to inspect frozen readings.
+VAV10: 2026-08-25 10:30:00 to 2026-08-26 00:15:00
+  Most prevalent selected screening pattern; longest event for that pattern: below_configured_minimum. Includes two hours of context on either side.

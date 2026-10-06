@@ -1,0 +1,11 @@
+vav,reason,start,end
+VAV01,Most prevalent selected screening pattern; longest event for that pattern: warm_low_damper. Includes two hours of context on either side.,2026-08-20 06:45:00,2026-08-20 22:45:00
+VAV02,Most prevalent selected screening pattern; longest event for that pattern: warm_low_damper. Includes two hours of context on either side.,2026-08-04 07:45:00,2026-08-04 18:45:00
+VAV03,Most prevalent selected screening pattern; longest event for that pattern: cold_zone. Includes two hours of context on either side.,2026-08-04 04:30:00,2026-08-05 00:15:00
+VAV04,Most prevalent selected screening pattern; longest event for that pattern: near_closed_with_flow. Includes two hours of context on either side.,2026-08-18 04:30:00,2026-08-18 22:15:00
+VAV05,Most prevalent selected screening pattern; longest event for that pattern: below_configured_minimum. Includes two hours of context on either side.,2026-08-11 05:15:00,2026-08-12 00:15:00
+VAV06,Most prevalent selected screening pattern; longest event for that pattern: near_closed_with_flow. Includes two hours of context on either side.,2026-08-11 06:30:00,2026-08-12 00:00:00
+VAV07,Most prevalent selected screening pattern; longest event for that pattern: warm_open_damper. Includes two hours of context on either side.,2026-08-05 10:30:00,2026-08-06 00:15:00
+VAV08,Most prevalent selected screening pattern; longest event for that pattern: warm_open_damper. Includes two hours of context on either side.,2026-08-05 11:00:00,2026-08-06 00:15:00
+VAV09,No assessable sustained event. Show 48-hour window around first recorded fan-On to inspect frozen readings.,2026-08-02 18:00:00,2026-08-04 18:00:00
+VAV10,Most prevalent selected screening pattern; longest event for that pattern: below_configured_minimum. Includes two hours of context on either side.,2026-08-25 10:30:00,2026-08-26 00:15:00
